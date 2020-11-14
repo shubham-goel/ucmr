@@ -17,6 +17,8 @@ In ECCV, 2020
 
 ### Installation
 Please use [this Dockerfile](Dockerfile) to build your environment. For convenience, we provide a pre-built docker image at [shubhamgoel/birds](https://hub.docker.com/r/shubhamgoel/birds). If interested in a non-docker build, please follow [docs/installation.md](docs/installation.md)
+
+### Training
 Please see [docs/training.md](docs/training.md)
 
 ### Demo
