@@ -1,0 +1,3 @@
+[submodule "src/external/PerceptualSimilarity"]
+	path = src/external/PerceptualSimilarity
+	url = git@github.com:shubham-goel/PerceptualSimilarity.git
