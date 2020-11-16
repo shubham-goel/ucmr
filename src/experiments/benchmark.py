@@ -127,6 +127,25 @@ class Tester(object):
 
         return iou, quat_error.numpy(), azel_pred.numpy(), azel_gt.numpy()
 
+    def get_render_kwargs(self):
+        opts = self.opts
+        if opts.dataset == 'cub':
+            euler_angles=[60, 90, 0]
+            rot_axis=[0,-1,1.7]
+            extra_elev=False
+        elif opts.dataset == 'p3d':
+            euler_angles = [90, 0., 0.]
+            rot_axis = [0,0,1]
+            extra_elev = 10
+        else:
+            raise ValueError()
+
+        return {
+            'euler_angles':euler_angles,
+            'rot_axis':rot_axis,
+            'extra_elev':extra_elev,
+        }
+
     def render(self, outputs, batch, num_angles=6, euler_angles=[60, 90, 0], rot_axis=[0,-1,1.7], extra_elev=False):
         """
         Render the shape+texture from different viewpoints
@@ -237,7 +256,7 @@ class Tester(object):
 
                 # Render images
                 if opts.render:
-                    self.render(outputs, batch)
+                    self.render(outputs, batch, **self.get_render_kwargs())
 
                 # if opts.save_visuals and (i % opts.visuals_freq == 0):
                 #     self.save_current_visuals(batch, outputs)

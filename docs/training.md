@@ -61,3 +61,42 @@ python -m src.experiments.pose_trainer \
         --cameraPoseDict_dataloader=cachedir/logs/"$EXP_NAME"/stats/raw_399.npz \
         --pretrained_network_path=cachedir/snapshots/"$EXP_NAME"/pred_net_400.pth
 ```
+
+
+## Other Categories
+You may download annotation files, precomputed camera-multiplex initializations and pretrained models for other categories via
+```
+wget https://people.eecs.berkeley.edu/~shubham-goel/projects/ucmr/cachedir-others.tar.gz && tar -vzxf cachedir-others.tar.gz
+```
+### Pascal Car
+```bash
+# Camera-initialization
+python -m src.experiments.cam_init --name=car_init_campose8x1 --flagfile=configs/car-init.cfg
+
+# Train shape+tex
+python -m src.experiments.camOpt_shape --name=car_train_cam8 --flagfile=configs/car-train.cfg \
+        --num_epochs=500 \
+        --cameraPoseDict=cachedir/logs/car_init_campose8/stats/campose_0.npz
+
+# Train camera
+export EXP_NAME=car_train_cam8
+python -m src.experiments.pose_trainer \
+        --name Cam/e400_"$EXP_NAME" \
+        --flagfile=configs/cub-train.cfg \
+        --pred_pose --camera_loss_wt=0 \
+        --nooptimizeCameraCont \
+        --batch_size=128 --num_epochs=800 --learning_rate=0.0001 \
+        --nodataloader_computeMaskDt \
+        --use_cameraPoseDict_as_gt --nocameraPoseDict_dataloader_isCamPose \
+        --cameraPoseDict_dataloader=cachedir/logs/"$EXP_NAME"/stats/raw_399.npz \
+        --cameraPoseDict_dataloader_mergewith=cachedir/logs/"$EXP_NAME"/stats/raw_398.npz \
+        --pretrained_network_path=cachedir/snapshots/"$EXP_NAME"/pred_net_400.pth
+
+# Benchmark/Evaluate
+python -m src.experiments.benchmark \
+        --pred_pose \
+        --pretrained_network_path=cachedir/snapshots/cam/e400_car_train_cam8/pred_net_700.pth \
+        --shape_path=cachedir/template_shape/car_template.npy\
+        --nodataloader_computeMaskDt\
+        --split=val --dataset=p3d --p3d_class=car
+```
