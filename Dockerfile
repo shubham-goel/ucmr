@@ -32,6 +32,7 @@ RUN apt update && \
 RUN conda install torchvision==0.3 -c pytorch
 
 # Softras
+RUN conda install scikit-image==0.15.0
 RUN cd /workspace                                   && \
     git clone https://github.com/ShichenLiu/SoftRas.git  && \
     cd SoftRas                                       && \
