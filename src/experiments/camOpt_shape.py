@@ -432,8 +432,8 @@ class ForwardWrapper(torch.nn.Module):
         self.statistics['gt_cam'] = self.gt_camera_pose[:,:] # N,4
         self.statistics['quat_error'] = self.quat_error         # N,P
         self.statistics['rend_mask_iou_mp'] = self.rend_mask_iou_mp         # N,P
-        self.statistics['shape'] = torch.tensor([0.])
-        self.statistics['texture_uv'] = torch.tensor([0.])
+        self.statistics['shape'] = torch.tensor([0.], device=self.input_img.device)
+        self.statistics['texture_uv'] = torch.tensor([0.], device=self.input_img.device)
 
         self.total_loss_num = torch.zeros_like(self.total_loss) + len(self.input_img)
         return_attr = {
