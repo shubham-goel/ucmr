@@ -25,14 +25,15 @@ from . import base as base_data
 curr_path = osp.dirname(osp.abspath(__file__))
 cache_path = osp.join(curr_path, '../../', 'cachedir')
 
-if osp.exists('/data1/shubhtuls'):
-    kData = '/data1/shubhtuls/cachedir/PASCAL3D+_release1.1'
-elif osp.exists('/scratch1/storage'):
+kData = '/data1/shubhtuls/cachedir/PASCAL3D+_release1.1'
+if not osp.isdir(kData):
     kData = '/scratch1/storage/PASCAL3D+_release1.1'
-elif osp.exists('/home/shubham/data/'):
+if not osp.isdir(kData):
     kData = '/home/shubham/data/PASCAL3D+_release1.1'
-else:  # Savio
+if not osp.isdir(kData):
     kData = '/global/home/users/kanazawa/scratch/PASCAL3D+_release1.1'
+if not osp.isdir(kData):
+    kData = '/private/home/shubhamgoel/data/PASCAL3D+_release1.1/'
 
 flags.DEFINE_string('p3d_dir', kData, 'PASCAL Data Directory')
 flags.DEFINE_string('p3d_anno_path', osp.join(cache_path, 'p3d'), 'Directory where pascal annotations are saved')
