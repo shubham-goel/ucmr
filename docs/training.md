@@ -53,7 +53,7 @@ export EXP_NAME=cub_train_cam4
 python -m src.experiments.pose_trainer \
         --name Cam/e400_"$EXP_NAME" \
         --flagfile=configs/cub-train.cfg \
-        --pred_pose --camera_loss_wt=0 \
+        --pred_pose --camera_loss_wt=2 \
         --nooptimizeCameraCont \
         --batch_size=128 --num_epochs=800 --learning_rate=0.0001 \
         --nodataloader_computeMaskDt \
@@ -83,7 +83,7 @@ export EXP_NAME=car_train_cam8
 python -m src.experiments.pose_trainer \
         --name Cam/e400_"$EXP_NAME" \
         --flagfile=configs/cub-train.cfg \
-        --pred_pose --camera_loss_wt=0 \
+        --pred_pose --camera_loss_wt=2 \
         --nooptimizeCameraCont \
         --batch_size=128 --num_epochs=800 --learning_rate=0.0001 \
         --nodataloader_computeMaskDt \
@@ -95,8 +95,24 @@ python -m src.experiments.pose_trainer \
 # Benchmark/Evaluate
 python -m src.experiments.benchmark \
         --pred_pose \
-        --pretrained_network_path=cachedir/snapshots/cam/e400_car_train_cam8/pred_net_700.pth \
+        --pretrained_network_path=cachedir/snapshots/cam/e400_car_train_cam8/pred_net_600.pth \
         --shape_path=cachedir/template_shape/car_template.npy\
-        --nodataloader_computeMaskDt\
+        --nodataloader_computeMaskDt --batch_size=1\
         --split=val --dataset=p3d --p3d_class=car
+```
+
+To benchmark 3DIoU, run evaluation script above with the `--save_mats` flag. This saves all shape predictions as mat files to `cachedir/evaluation/p3d_test/`. To evaluate these shapes, download (from [here](https://people.eecs.berkeley.edu/~shubham-goel/projects/ucmr/p3d_eval.zip)) and extract preprocessed pascal3d shapes to `cachedir/p3d_eval`. Also, point to the correct PASCAL3D+_release1.1 dataset path in `src/p3d_iou/driver.m`.
+```bash
+# Save predictions to mat files
+python -m src.experiments.benchmark \
+        --pred_pose \
+        --pretrained_network_path=cachedir/snapshots/cam/e400_car_train_cam8/pred_net_600.pth \
+        --shape_path=cachedir/template_shape/car_template.npy\
+        --nodataloader_computeMaskDt --batch_size=1\
+        --split=val --dataset=p3d --p3d_class=car\
+        --save_mats 
+
+# Compute 3DIoU using matlab script.
+cd src/p3d_iou/
+matlab -nodisplay < driver.m
 ```

@@ -35,6 +35,7 @@ from absl import flags
 from imageio import imwrite
 from pathlib2 import Path
 from tqdm import tqdm
+import scipy.io as sio
 
 from ..data import cub as cub_data
 from ..data import imagenet as imagenet_data
@@ -64,6 +65,7 @@ flags.DEFINE_integer('n_data_workers', 4, 'Number of data loading workers')
 flags.DEFINE_boolean('shuffle_data', False, 'Whether dataloader shuffles data')
 flags.DEFINE_integer('max_eval_iter', 0, 'Maximum evaluation iterations. 0 => 1 epoch.')
 flags.DEFINE_boolean('render', False, 'Render data')
+flags.DEFINE_boolean('save_mats', False, 'Save mat files for 3D iou evaluation')
 
 class Tester(object):
     def __init__(self, opts):
@@ -257,6 +259,16 @@ class Tester(object):
                 # Render images
                 if opts.render:
                     self.render(outputs, batch, **self.get_render_kwargs())
+
+                # Save shape to mat (only for p3d)
+                if opts.save_mats:
+                    for fid, verts in zip(batch['inds'], outputs['verts']):
+                        voc_img_id = self.dataloader.dataset.anno[fid].voc_image_id
+                        voc_rec_id = self.dataloader.dataset.anno[fid].voc_rec_id
+                        out_dir = Path('./cachedir/evaluation/') / f'p3d_{opts.split}'
+                        out_dir.mkdir(exist_ok=True, parents=True)
+                        mat_file = out_dir/'{}_{}.mat'.format(voc_img_id, voc_rec_id)
+                        sio.savemat(str(mat_file), {'verts': verts.detach().cpu().numpy(), 'faces': self.faces.detach().cpu().numpy()+1})
 
                 # if opts.save_visuals and (i % opts.visuals_freq == 0):
                 #     self.save_current_visuals(batch, outputs)
