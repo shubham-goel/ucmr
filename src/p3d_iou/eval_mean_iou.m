@@ -19,8 +19,9 @@ function [ious] = eval_mean_iou(exp_name, eval_split, voc_class, p3d_dir)
     result_files = result_files(valid_inds);
 
     gt_verts = load_p3d_meshes(p3d_dir, voc_class);
-    gt_voxels_dir = fullfile(basedir, 'cachedir', 'p3d_eval', 'modelVoxels', voc_class);
-    gt_voxels = load_p3d_voxels(gt_voxels_dir, length(gt_verts));
+    gt_faces = load_p3d_mesh_faces(p3d_dir, voc_class);
+    % gt_voxels_dir = fullfile(basedir, 'cachedir', 'p3d_eval', 'modelVoxels', voc_class);
+    % gt_voxels = load_p3d_voxels(gt_voxels_dir, length(gt_verts));
 
     %% Compute optimal transformation between predicted and gt frames
     anno_dir = fullfile(p3d_dir, 'Annotations', [voc_class '_pascal']);
@@ -59,7 +60,7 @@ function [ious] = eval_mean_iou(exp_name, eval_split, voc_class, p3d_dir)
     %trans = [0, 0, 0];
 
     ious = zeros(n_test, 1);
-    
+
     disp(trans);
     disp(scale);
 
@@ -73,6 +74,12 @@ function [ious] = eval_mean_iou(exp_name, eval_split, voc_class, p3d_dir)
 
         pred_volume = polygon2voxel(FV, grid_size, 'none', false);
         gt_mesh = gt_verts{subtypes{ix}};
+        gt_mesh_faces = gt_faces{subtypes{ix}};
+
+        FV_gt = struct();
+        FV_gt.faces = gt_mesh_faces;
+        FV_gt.vertices = (grid_size)*(gt_mesh+0.5) + 0.5;
+        gt_volume = polygon2voxel(FV_gt, grid_size, 'none', false);
 
         %scatter3(gt_mesh(:,1), gt_mesh(:,2), gt_mesh(:,3), 'r.'); axis equal; hold on;
         %scatter3(vertices(:,1), vertices(:,2), vertices(:,3), 'b.'); axis equal; hold on;
@@ -80,8 +87,9 @@ function [ious] = eval_mean_iou(exp_name, eval_split, voc_class, p3d_dir)
 
         %keyboard;
         %close all;
-        ious(ix) = compute_iou(pred_volume, gt_voxels{subtypes{ix}}, 0.5);
-        
+        %ious(ix) = compute_iou(pred_volume, gt_voxels{subtypes{ix}}, 0.5);
+        ious(ix) = compute_iou(pred_volume, gt_volume, 0.5);
+
         %figure(1); imagesc(squeeze(gt_voxels{subtypes{ix}}(16,:,:)));
 
         %figure(2); imagesc(squeeze(pred_volume(16,:,:)));
@@ -114,6 +122,18 @@ function gt_verts = load_p3d_meshes(p3d_dir, voc_class)
     end
 end
 
+function gt_faces = load_p3d_mesh_faces(p3d_dir, voc_class)
+    models_all = load(fullfile(p3d_dir, 'CAD', voc_class));
+    models_all = getfield(models_all, voc_class);
+
+    n_models = length(models_all);
+    faces_gt = {};
+    for i = 1:n_models
+        faces = models_all(i).faces;
+        gt_faces{i} = faces;
+    end
+end
+
 function gt_voxels = load_p3d_voxels(gt_voxels_dir, n_models)
     gt_voxels = {};
     for i = 1:n_models
@@ -125,10 +145,10 @@ end
 function [trans, scale] =  estimateTransform(vGt, vPred)
     vGtMin = min(vGt,[],1);
     vGtMax = max(vGt,[],1);
-    
+
     vPredMin = min(vPred,[],1);
     vPredMax = max(vPred,[],1);
-    
+
     trans = (vGtMin+vGtMax)/2 - (vPredMax + vPredMin)/2;
     scale = prod(vGtMax-vGtMin)/prod(vPredMax-vPredMin); scale = scale ^ (1/3);
 end
