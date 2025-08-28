@@ -22,9 +22,9 @@ Please use [this Dockerfile](Dockerfile) to build your environment. For convenie
 Please see [docs/training.md](docs/training.md)
 
 ### Demo
-1. From the `ucmr` directory, download the pretrained models:
+1. From the `ucmr` directory, download the pretrained models (`cub_train_cam4_withcam.tar.gz`) from [this gdrive folder](https://drive.google.com/drive/folders/1vsebps14iQpIP6VarjjQanleuwEvEoMl?usp=sharing) and extract it:
 ```
-wget https://people.eecs.berkeley.edu/~shubham-goel/projects/ucmr/cub_train_cam4_withcam.tar.gz && tar -vzxf cub_train_cam4_withcam.tar.gz
+tar -vzxf cub_train_cam4_withcam.tar.gz
 ```
 You should see `cachedir/snapshots/cam/e400_cub_train_cam4`
 

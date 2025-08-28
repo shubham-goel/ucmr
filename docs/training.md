@@ -5,16 +5,16 @@
 wget http://www.vision.caltech.edu/visipedia-data/CUB-200-2011/CUB_200_2011.tgz && tar -xf CUB_200_2011.tgz
 ```
 
-2. Download our annotation files and template meshes as follows. This should create `cachedir/cub` and `cachedir/template_shape`
+2. Download our annotation files and template meshes (`cachedir.tar.gz`) from [this gdrive folder](https://drive.google.com/drive/folders/1vsebps14iQpIP6VarjjQanleuwEvEoMl?usp=sharing) and extract it as follows. This should create `cachedir/cub` and `cachedir/template_shape`
 ```
-wget https://people.eecs.berkeley.edu/~shubham-goel/projects/ucmr/cachedir.tar.gz && tar -vzxf cachedir.tar.gz
+tar -vzxf cachedir.tar.gz
 ```
 
 ## Model Training
 ### Initialize camera multiplex
-You may download precomputed NMR-initialized camera poses via
+You may download precomputed NMR-initialized camera poses (`cub_init_campose8x5.tar.gz`) from [this gdrive folder](https://drive.google.com/drive/folders/1vsebps14iQpIP6VarjjQanleuwEvEoMl?usp=sharing) and extract it as follows.
 ```
-wget https://people.eecs.berkeley.edu/~shubham-goel/projects/ucmr/cub_init_campose8x5.tar.gz && tar -vzxf cub_init_campose8x5.tar.gz
+tar -vzxf cub_init_campose8x5.tar.gz
 ```
 This should create `cachedir/logs/cub_init_campose8x5`
 
@@ -64,9 +64,9 @@ python -m src.experiments.pose_trainer \
 
 
 ## Other Categories
-You may download annotation files, precomputed camera-multiplex initializations and pretrained models for other categories via
+You may download annotation files, precomputed camera-multiplex initializations and pretrained models for other categories (`cachedir-others.tar.gz`) from [this gdrive folder](https://drive.google.com/drive/folders/1vsebps14iQpIP6VarjjQanleuwEvEoMl?usp=sharing) and extract it as follows.
 ```
-wget https://people.eecs.berkeley.edu/~shubham-goel/projects/ucmr/cachedir-others.tar.gz && tar -vzxf cachedir-others.tar.gz
+tar -vzxf cachedir-others.tar.gz
 ```
 ### Pascal Car
 ```bash
